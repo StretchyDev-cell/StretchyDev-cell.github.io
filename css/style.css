@@ -1,0 +1,347 @@
+:root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --accent-color: #ffffff;
+    --glass-bg: rgba(10, 10, 10, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --card-width: 750px;
+    --font-main: 'Space Mono', monospace;
+    --glow-color: rgba(255, 255, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    cursor: none;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.02));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.9) 100%);
+    pointer-events: none;
+    z-index: 99;
+}
+
+#enter-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease-in-out;
+    cursor: pointer;
+}
+
+.enter-content {
+    text-align: center;
+    position: relative;
+}
+
+.glitch-title {
+    font-size: 2rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 12px;
+    color: #fff;
+    position: relative;
+    opacity: 0.8;
+}
+
+.glow-bar {
+    width: 0;
+    height: 1px;
+    background: #fff;
+    margin: 15px auto;
+    animation: expand-bar 2.5s infinite ease-in-out;
+}
+
+@keyframes expand-bar {
+
+    0%,
+    100% {
+        width: 0%;
+        opacity: 0;
+    }
+
+    50% {
+        width: 60%;
+        opacity: 0.5;
+    }
+}
+
+#main-container {
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    z-index: 10;
+}
+
+#main-container.visible {
+    opacity: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+.profile-card {
+    width: var(--card-width);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 80px rgba(0, 0, 0, 1);
+    animation: float 8s ease-in-out infinite;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    transition: transform 0.1s ease-out;
+}
+
+.banner {
+    height: 180px;
+    background-color: #080808;
+    background-position: center;
+    background-size: cover;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.avatar-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: -70px auto 15px;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    border: 2px solid var(--glass-border);
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: filter 0.5s ease;
+}
+
+.avatar-container:hover .avatar-img {
+    filter: grayscale(0%);
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border: 3px solid #000;
+    border-radius: 50%;
+}
+
+.profile-info {
+    text-align: center;
+    padding: 20px 40px 40px;
+}
+
+.username {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    text-transform: lowercase;
+}
+
+.badge {
+    font-size: 1.2rem;
+    color: #fff;
+    margin-left: 8px;
+    opacity: 0.6;
+}
+
+.bio-text {
+    font-size: 1.1rem;
+    color: #999;
+    min-height: 1.2em;
+    margin-bottom: 35px;
+    letter-spacing: 1.5px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+}
+
+.social-btn {
+    color: #555;
+    font-size: 1.8rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+.social-btn:hover {
+    color: #fff;
+    transform: translateY(-4px);
+}
+
+.media-player {
+    background: rgba(5, 5, 5, 0.5);
+    padding: 30px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.song-info {
+    font-size: 0.9rem;
+    text-align: center;
+    letter-spacing: 1.5px;
+}
+
+.song-artist {
+    display: block;
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 6px;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.controls i {
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.controls i:hover {
+    color: #fff;
+}
+
+.volume-slider {
+    width: 70%;
+    height: 1px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #222;
+    outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    cursor: pointer;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.cursor-dot,
+.cursor-outline {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.cursor-dot {
+    width: 4px;
+    height: 4px;
+    background-color: #fff;
+}
+
+.cursor-outline {
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cursor-dot.click {
+    transform: scale(2);
+}
+
+.cursor-outline.hover {
+    transform: scale(1.5);
+    border-color: #fff;
+}
+
+body:hover .cursor-dot,
+body:hover .cursor-outline {
+    opacity: 1;
+}
+
+@media (max-width: 800px) {
+    :root {
+        --card-width: 90%;
+    }
+
+    .username {
+        font-size: 1.8rem;
+    }
+}
