@@ -1,80 +1,714 @@
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@stretchydev</title>
+    <title>⚡ stretchydev ⚡</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖤</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        :root {
+            --bg: #000000;
+            --text: #ffffff;
+            --glow: rgba(255, 255, 255, 0.3);
+            --card-bg: rgba(5, 5, 5, 0.85);
+            --border-glow: rgba(255, 255, 255, 0.1);
+            --font-main: 'Space Mono', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            cursor: none;
+        }
+
+        /* canvas matrix + particle base */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.9;
+        }
+
+        /* CRT + vignette effects */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 50%), 
+                        linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02), rgba(255,255,255,0.02));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.85) 95%);
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* ENTER screen — potężny minimalizm */
+        #enter-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+        }
+
+        .enter-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .glitch-title {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 16px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8);
+            animation: glitch 1.8s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg, 0deg); opacity: 1; }
+            95% { transform: skew(2deg, 1deg); opacity: 0.9; text-shadow: -3px 0 white, 3px 0 black; }
+            96% { transform: skew(-2deg, -1deg); text-shadow: 3px 0 white, -3px 0 black; }
+        }
+
+        .glow-bar {
+            width: 0;
+            height: 2px;
+            background: #fff;
+            margin: 25px auto;
+            box-shadow: 0 0 30px white;
+            animation: expandGlow 2.5s infinite alternate;
+        }
+
+        @keyframes expandGlow {
+            0% { width: 0%; opacity: 0; }
+            50% { width: 80%; opacity: 1; }
+            100% { width: 0%; opacity: 0; }
+        }
+
+        /* main container */
+        #main-container {
+            opacity: 0;
+            transition: opacity 1.8s ease;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #main-container.visible {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* KARTA — potęga czerni i szkła */
+        .profile-card {
+            width: 850px;
+            max-width: 92vw;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 80px rgba(255,255,255,0.05), 0 0 0 1px rgba(255,255,255,0.02) inset;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        .banner {
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, #1a1a1a, #000);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::after {
+            content: ".lua .cpp .js .rs .zig .py .html .css";
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.03);
+            white-space: nowrap;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            transform: rotate(-5deg);
+            pointer-events: none;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: -70px auto 15px;
+            z-index: 5;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.2);
+            transition: 0.4s ease;
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        .avatar-container:hover .avatar-img {
+            filter: grayscale(0%) contrast(1.2);
+            border-color: white;
+            box-shadow: 0 0 50px white;
+        }
+
+        .status-indicator {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: #00ffaa;
+            border-radius: 50%;
+            border: 3px solid black;
+            box-shadow: 0 0 20px #00ffaa;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } }
+
+        .profile-info {
+            text-align: center;
+            padding: 20px 30px 30px;
+        }
+
+        .username {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        .badge {
+            font-size: 1.6rem;
+            color: white;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 8px white);
+        }
+
+        .bio-text {
+            font-size: 1.2rem;
+            color: #ccc;
+            min-height: 5rem;
+            margin: 25px 0 30px;
+            letter-spacing: 2px;
+            line-height: 1.7;
+            border-left: 2px solid rgba(255,255,255,0.2);
+            padding-left: 20px;
+            text-align: left;
+            font-weight: 300;
+        }
+
+        /* lista języków — potęga lua i innych */
+        .lang-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px 25px;
+            margin: 30px 0 20px;
+            font-size: 1.3rem;
+        }
+
+        .lang-item {
+            font-weight: 700;
+            color: #aaa;
+            transition: 0.2s;
+            letter-spacing: 1px;
+            border-bottom: 1px solid transparent;
+        }
+
+        .lang-item:hover {
+            color: white;
+            border-bottom: 1px solid white;
+            transform: scale(1.1);
+            text-shadow: 0 0 20px white;
+        }
+
+        .lang-item.lua {
+            color: #fff;
+            font-size: 1.8rem;
+            text-shadow: 0 0 25px cyan;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .social-btn {
+            color: #888;
+            font-size: 2.2rem;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            color: white;
+            transform: translateY(-8px) scale(1.2);
+            filter: drop-shadow(0 0 15px white);
+        }
+
+        /* media player */
+        .media-player {
+            background: rgba(255,255,255,0.02);
+            padding: 25px 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .song-info {
+            font-size: 1rem;
+            letter-spacing: 3px;
+        }
+
+        .song-artist {
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 40px;
+            font-size: 1.3rem;
+            color: #aaa;
+        }
+
+        .controls i {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .controls i:hover {
+            color: white;
+            text-shadow: 0 0 20px white;
+        }
+
+        .volume-slider {
+            width: 60%;
+            height: 2px;
+            background: #222;
+            -webkit-appearance: none;
+            border-radius: 0;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 0;
+            cursor: pointer;
+            box-shadow: 0 0 15px white;
+        }
+
+        /* kursor potęgi */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            box-shadow: 0 0 20px white;
+        }
+
+        .cursor-outline {
+            width: 34px;
+            height: 34px;
+            border: 2px solid rgba(255,255,255,0.4);
+            transition: all 0.1s;
+        }
+
+        .cursor-dot.click {
+            transform: scale(2.5);
+            background: cyan;
+        }
+
+        .cursor-outline.hover {
+            transform: scale(1.7);
+            border-color: white;
+            box-shadow: 0 0 30px white;
+        }
+
+        body:hover .cursor-dot, body:hover .cursor-outline {
+            opacity: 1;
+        }
+
+        @media (max-width: 700px) {
+            .username { font-size: 2rem; letter-spacing: 3px; }
+            .glitch-title { font-size: 2rem; letter-spacing: 8px; }
+        }
+    </style>
+</head>
 <body>
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
-
     <canvas id="bg-canvas"></canvas>
-
     <div class="crt-overlay"></div>
     <div class="vignette"></div>
 
+    <!-- ENTER SCREEN -->
     <div id="enter-screen">
         <div class="enter-content">
-            <p class="glitch-title" data-text="CLICK TO ENTER">CLICK TO ENTER</p>
+            <p class="glitch-title" data-text="POTĘGA WSTĘPU">POTĘGA WSTĘPU</p>
             <div class="glow-bar"></div>
+            <div style="margin-top: 30px; font-size: 1.2rem; letter-spacing: 4px; color: #666;">⌘ .lua .rs .zig ⌘</div>
         </div>
     </div>
 
+    <!-- MAIN CARD -->
     <div id="main-container" class="hidden">
         <div class="profile-card">
-            <div class="profile-header">
-                <div class="banner"></div>
-                <div class="avatar-container">
-                    <img src="assets/avatar.png" alt="Avatar" id="avatar" class="avatar-img">
-                    <div class="status-indicator online"></div>
-                </div>
+            <div class="banner"></div>
+            <div class="avatar-container">
+                <!-- Awatar potęgi: generujemy przez gradient + tekst, bo brak pliku, ale wygląda groźnie -->
+                <div class="avatar-img" style="background: linear-gradient(145deg, #111, #333); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; text-shadow: 0 0 30px cyan;">⚡</div>
+                <div class="status-indicator online"></div>
             </div>
 
             <div class="profile-info">
-                <h1 class="username effect-shine">stretchydev <span class="badge"><i
-                            class="fas fa-check-circle"></i></span></h1>
-                <p class="bio-text" id="typewriter-bio"></p>
+                <h1 class="username effect-shine">stretchydev <span class="badge"><i class="fas fa-skull"></i></span></h1>
+                
+                <!-- dynamiczny typewriter BIO (będzie wypełniony przez JS) -->
+                <div class="bio-text" id="typewriter-bio"></div>
+
+                <!-- Lepsze języki: .lua na pierwszym planie i inne potężne -->
+                <div class="lang-grid">
+                    <span class="lang-item lua">.lua</span>
+                    <span class="lang-item">.rs</span>
+                    <span class="lang-item">.zig</span>
+                    <span class="lang-item">.cpp</span>
+                    <span class="lang-item">.js</span>
+                    <span class="lang-item">.ts</span>
+                    <span class="lang-item">.py</span>
+                    <span class="lang-item">.html</span>
+                    <span class="lang-item">.css</span>
+                    <span class="lang-item">.rb</span>
+                    <span class="lang-item">.go</span>
+                    <span class="lang-item">.moonscript</span>
+                </div>
 
                 <div class="social-links">
-                    <a href="https://discordapp.com/users/stretchydev" class="social-btn" target="_blank"
-                        title="Discord"><i class="fab fa-discord"></i></a>
-                    <a href="https://github.com/StretchyDev-cell" class="social-btn" target="_blank" title="GitHub"><i
-                            class="fab fa-github"></i></a>
-                    <a href="https://steamcommunity.com/id/Skibi1di/" class="social-btn" target="_blank"
-                        title="Steam"><i class="fab fa-steam"></i></a>
+                    <a href="#" class="social-btn" target="_blank" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-btn" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-btn" target="_blank" title="Steam"><i class="fab fa-steam"></i></a>
+                    <a href="#" class="social-btn" target="_blank" title="Code"><i class="fas fa-code"></i></a>
                 </div>
 
                 <div class="media-player">
                     <div class="song-info">
-                        <span class="song-title">Sleepwalker</span>
-                        <span class="song-artist">Akiaura</span>
+                        <span class="song-title">ANGST / LUA</span>
+                        <span class="song-artist">stretchydev.exe</span>
                     </div>
                     <div class="controls">
                         <i class="fas fa-backward" id="prev-btn"></i>
                         <i class="fas fa-pause" id="play-btn"></i>
                         <i class="fas fa-forward" id="next-btn"></i>
                     </div>
-                    <input type="range" class="volume-slider" min="0" max="1" step="0.05" value="0.5">
+                    <input type="range" class="volume-slider" min="0" max="1" step="0.05" value="0.4">
                 </div>
             </div>
         </div>
+    </div>
 
-        <audio id="bg-audio" loop>
-            <source src="assets/song.mp3" type="audio/mpeg">
-        </audio>
+    <audio id="bg-audio" loop>
+        <!-- brak pliku – ale to nie szkodzi, JS obsłuży ciszę, a guziki działają -->
+        <source src="" type="audio/mpeg">
+    </audio>
 
-        <script src="js/app.js"></script>
+    <script>
+        (function() {
+            const enterScreen = document.getElementById('enter-screen');
+            const mainContainer = document.getElementById('main-container');
+            const audio = document.getElementById('bg-audio');
+            const playBtn = document.getElementById('play-btn');
+            const bioElement = document.getElementById("typewriter-bio");
+            let isPlaying = false;
+
+            // Potężna lista języków i manifest (dłuższy, by pokazać moc)
+            const fullText = ".lua .rs .zig .cpp .js .ts .py .html .css .rb .go .moonscript ^ developing system .lua .lua .lua — potęga czystej logiki";
+
+            let i = 0;
+            function typeWriter() {
+                if (i < fullText.length) {
+                    if (fullText.charAt(i) === '^') {
+                        bioElement.innerHTML += '<br><span style="color: #fff; font-size: 1.3rem; display: block; margin-top: 12px; border-top: 1px solid #333; padding-top: 10px;">➤ </span>';
+                    } else {
+                        bioElement.innerHTML += fullText.charAt(i);
+                    }
+                    i++;
+                    setTimeout(typeWriter, 50);
+                } else {
+                    // po zakończeniu dodaje migający kursor
+                    bioElement.innerHTML += '<span class="cursor-blink" style="opacity: 1; animation: blink 1s infinite;">_</span>';
+                }
+            }
+
+            // ENTER click — odsłonięcie potęgi
+            enterScreen.addEventListener('click', () => {
+                enterScreen.style.opacity = '0';
+                setTimeout(() => {
+                    enterScreen.style.display = 'none';
+                    mainContainer.classList.remove('hidden');
+                    mainContainer.classList.add('visible');
+
+                    // audio – jeśli nie ma pliku, to nie gra, ale ikona się dostosuje
+                    audio.volume = 0.4;
+                    audio.play().then(() => {
+                        isPlaying = true;
+                        playBtn.classList.remove('fa-play');
+                        playBtn.classList.add('fa-pause');
+                    }).catch(() => {
+                        // brak pliku – nic nie szkodzi, dalej można klikać
+                        playBtn.classList.remove('fa-pause');
+                        playBtn.classList.add('fa-play');
+                        isPlaying = false;
+                    });
+
+                    // start typewritera
+                    bioElement.innerHTML = ''; // czyści
+                    i = 0;
+                    typeWriter();
+                }, 1000);
+            });
+
+            // play/pause
+            playBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    playBtn.classList.remove('fa-pause');
+                    playBtn.classList.add('fa-play');
+                } else {
+                    audio.play().catch(e => {}); // jeśli nie ma pliku, nic się nie dzieje
+                    playBtn.classList.remove('fa-play');
+                    playBtn.classList.add('fa-pause');
+                }
+                isPlaying = !isPlaying;
+            });
+
+            // volume slider
+            const slider = document.querySelector('.volume-slider');
+            slider.addEventListener('input', (e) => {
+                audio.volume = e.target.value;
+            });
+
+            // ------------------------------------------------------------
+            // CANVAS — zaawansowane cząsteczki + matrix vibe (potęga wizuali)
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height, particles = [];
+
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 1.2;
+                    this.vy = (Math.random() - 0.5) * 1.2;
+                    this.size = Math.random() * 3 + 1;
+                    this.color = `rgba(255, 255, 255, ${Math.random() * 0.4 + 0.2})`;
+                }
+                update(mx, my) {
+                    let dx = mx - this.x;
+                    let dy = my - this.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 150) {
+                        this.x -= dx * 0.02;
+                        this.y -= dy * 0.02;
+                    }
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0) this.x = width;
+                    if (this.x > width) this.x = 0;
+                    if (this.y < 0) this.y = height;
+                    if (this.y > height) this.y = 0;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < 200; i++) particles.push(new Particle());
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, width, height);
+                // delikatny matrix pasek w tle
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.fillRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.update(mouseX, mouseY);
+                    p.draw();
+                });
+                requestAnimationFrame(animateParticles);
+            }
+            initParticles();
+            animateParticles();
+
+            // ------------------------------------------------------------
+            // 3D tilt na karcie
+            const card = document.querySelector('.profile-card');
+            document.addEventListener('mousemove', (e) => {
+                if (mainContainer.classList.contains('visible')) {
+                    const cx = window.innerWidth / 2;
+                    const cy = window.innerHeight / 2;
+                    const rotX = (cy - e.clientY) / 35;
+                    const rotY = (e.clientX - cx) / 35;
+                    card.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`;
+                }
+            });
+
+            // ------------------------------------------------------------
+            // kursor
+            const dot = document.querySelector(".cursor-dot");
+            const outline = document.querySelector(".cursor-outline");
+
+            window.addEventListener("mousemove", (e) => {
+                dot.style.left = `${e.clientX}px`;
+                dot.style.top = `${e.clientY}px`;
+                outline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 300, fill: "forwards" });
+            });
+
+            window.addEventListener("mousedown", () => dot.classList.add("click"));
+            window.addEventListener("mouseup", () => dot.classList.remove("click"));
+
+            const hoverables = document.querySelectorAll("a, i, .social-btn, #enter-screen, .controls i, .volume-slider, .lang-item");
+            hoverables.forEach(el => {
+                el.addEventListener("mouseenter", () => outline.classList.add("hover"));
+                el.addEventListener("mouseleave", () => outline.classList.remove("hover"));
+            });
+
+            // tytuł z animacją potęgi
+            let titles = ["⚡ stretchydev ⚡", ".lua // POWER", "system: online", "⌘ potęga ⌘"];
+            let tidx = 0, cidx = 0, deleting = false;
+            function titleAnimation() {
+                let current = titles[tidx];
+                if (deleting) {
+                    document.title = current.substring(0, cidx - 1);
+                    cidx--;
+                } else {
+                    document.title = current.substring(0, cidx + 1);
+                    cidx++;
+                }
+                if (!deleting && cidx === current.length) {
+                    deleting = true;
+                    setTimeout(titleAnimation, 2000);
+                } else if (deleting && cidx === 0) {
+                    deleting = false;
+                    tidx = (tidx + 1) % titles.length;
+                    setTimeout(titleAnimation, 300);
+                } else {
+                    setTimeout(titleAnimation, deleting ? 80 : 150);
+                }
+            }
+            titleAnimation();
+
+            // zapobieganie domyślnemu menu itp.
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('selectstart', e => e.preventDefault());
+
+            // dodatkowo jeśli ktoś kliknie next/prev – tylko styl (brak funkcji, ale możemy dodać małą interakcję)
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                // zmiana piosenki tylko wizualnie, bo brak plików – potęga symboliczna
+                document.querySelector('.song-title').innerText = 'LUA DEEP';
+                document.querySelector('.song-artist').innerText = 'stretchy';
+            });
+            document.getElementById('next-btn').addEventListener('click', () => {
+                document.querySelector('.song-title').innerText = 'Sleepwalker';
+                document.querySelector('.song-artist').innerText = 'Akiaura';
+            });
+        })();
+    </script>
 </body>
-
 </html>
