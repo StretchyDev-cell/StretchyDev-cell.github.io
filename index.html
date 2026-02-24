@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>stretchydev · .lua</title>
+    <title>stretchydev · minimal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -16,8 +16,8 @@
         }
 
         body {
-            background: #000;
-            color: #fff;
+            background: #050505;
+            color: #ededed;
             font-family: 'Space Mono', monospace;
             height: 100vh;
             overflow: hidden;
@@ -28,7 +28,7 @@
             cursor: none;
         }
 
-        /* canvas background */
+        /* Subtelne płótno w tle */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -36,74 +36,63 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.4;
+            opacity: 0.6;
         }
 
-        /* minimal overlay */
         .vignette {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 50%, #000 100%);
+            background: radial-gradient(circle at center, transparent 30%, #050505 100%);
             pointer-events: none;
             z-index: 10;
         }
 
-        /* enter screen */
+        /* Ekran startowy - czysty minimalizm */
         #enter-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: #050505;
             z-index: 100;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease;
-            cursor: pointer;
+            transition: opacity 1.5s ease;
+            cursor: none;
         }
 
         .enter-content {
             text-align: center;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .enter-content:hover {
+            opacity: 1;
         }
 
         .enter-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: 8px;
-            color: #fff;
-            opacity: 0.7;
-            animation: pulse 2.5s infinite;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: #888;
+            text-transform: uppercase;
+            animation: pulseFade 3s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.4; }
+        @keyframes pulseFade {
+            0%, 100% { opacity: 0.4; }
             50% { opacity: 1; }
-            100% { opacity: 0.4; }
         }
 
-        .enter-line {
-            width: 0;
-            height: 1px;
-            background: #fff;
-            margin: 20px auto;
-            animation: lineExpand 2.5s infinite;
-        }
-
-        @keyframes lineExpand {
-            0% { width: 0; opacity: 0; }
-            50% { width: 200px; opacity: 0.5; }
-            100% { width: 0; opacity: 0; }
-        }
-
-        /* main container */
+        /* Główny kontener */
         #main-container {
             opacity: 0;
-            transition: opacity 1.5s ease;
+            transition: opacity 2s ease;
             z-index: 20;
             width: 100%;
             display: flex;
@@ -118,252 +107,195 @@
             display: none !important;
         }
 
-        /* card — pure minimal */
+        /* Karta - eleganckie szkło */
         .card {
-            width: 700px;
+            width: 460px;
             max-width: 90vw;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            padding: 40px 30px;
+            background: rgba(15, 15, 15, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 50px 40px;
             transform-style: preserve-3d;
             transition: transform 0.1s ease;
-        }
-
-        /* avatar */
-        .avatar-wrapper {
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            align-items: center;
         }
 
+        /* Awatar */
         .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 2px;
-            filter: grayscale(1);
-            transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(1) opacity(0.8);
+            transition: all 0.5s ease;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .avatar:hover {
-            filter: grayscale(0);
-            border-color: white;
+            filter: grayscale(0) opacity(1);
+            transform: scale(1.05);
         }
 
-        /* username */
+        /* Nazwa użytkownika */
         .username {
-            font-size: 2.2rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            letter-spacing: 4px;
-            text-align: center;
-            margin-bottom: 10px;
-            text-transform: lowercase;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .username i {
-            font-size: 1.4rem;
-            color: #666;
-            margin-left: 8px;
+            font-size: 0.4rem;
+            color: #a8a8a8;
+            animation: statusPulse 2s infinite;
         }
 
-        /* bio typewriter */
+        @keyframes statusPulse {
+            0% { color: #333; }
+            50% { color: #fff; }
+            100% { color: #333; }
+        }
+
+        /* Bio */
         .bio {
-            text-align: left;
-            font-size: 1rem;
-            color: #aaa;
-            min-height: 4rem;
-            margin: 25px 0;
-            line-height: 1.6;
-            letter-spacing: 1px;
-            border-left: 1px solid #333;
-            padding-left: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+            min-height: 40px;
+            margin: 16px 0 30px;
+            line-height: 1.8;
+            letter-spacing: 0.5px;
         }
 
-        /* language stack — .lua dominant */
+        /* Stack technologii */
         .lang-stack {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 16px 28px;
-            margin: 25px 0 20px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: lowercase;
+            gap: 12px 20px;
+            font-size: 0.8rem;
+            color: #444;
+            margin-bottom: 35px;
         }
 
         .lang-stack span {
-            color: #444;
-            transition: 0.2s;
-            letter-spacing: 1px;
+            transition: color 0.3s ease;
         }
 
         .lang-stack span:hover {
-            color: #fff;
+            color: #aaa;
         }
 
         .lang-stack .lua {
             color: #fff;
-            font-size: 1.8rem;
-            text-shadow: 0 0 20px cyan;
+            font-weight: 700;
         }
 
-        /* social links */
+        /* Linki społecznościowe */
         .social {
             display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 25px 0 20px;
+            gap: 30px;
+            margin-bottom: 35px;
         }
 
         .social a {
             color: #555;
-            font-size: 2rem;
-            transition: 0.2s;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
             text-decoration: none;
         }
 
         .social a:hover {
             color: #fff;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        /* music player */
+        /* Odtwarzacz audio - czysty układ */
         .player {
-            margin-top: 25px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 15px;
-            border-top: 1px solid rgba(255,255,255,0.03);
+            gap: 16px;
             padding-top: 25px;
-        }
-
-        .track {
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: #888;
-            text-transform: uppercase;
-        }
-
-        .track-artist {
-            color: #444;
-            font-size: 0.75rem;
-            margin-top: 4px;
-        }
-
-        .player-controls {
-            display: flex;
-            gap: 35px;
-            font-size: 1.2rem;
-            color: #666;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            width: 100%;
+            justify-content: center;
         }
 
         .player-controls i {
-            cursor: pointer;
-            transition: 0.2s;
+            font-size: 1rem;
+            color: #888;
+            transition: color 0.3s ease;
         }
 
         .player-controls i:hover {
             color: #fff;
         }
 
-        .volume {
-            width: 200px;
-            height: 1px;
-            background: #222;
-            -webkit-appearance: none;
+        .track-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #666;
+            text-transform: lowercase;
         }
 
-        .volume::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 8px;
-            height: 8px;
-            background: #fff;
-            cursor: pointer;
+        .track-artist {
+            color: #999;
         }
 
-        /* custom cursor */
-        .cursor-dot,
-        .cursor-ring {
+        /* Kursor - ultra minimal */
+        .cursor-dot {
             position: fixed;
             top: 0;
             left: 0;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
         }
 
-        .cursor-dot {
-            width: 4px;
-            height: 4px;
-            background: #fff;
-        }
-
-        .cursor-ring {
-            width: 28px;
-            height: 28px;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .cursor-dot.click {
-            transform: scale(2);
-            background: #fff;
-        }
-
-        .cursor-ring.hover {
-            transform: scale(1.5);
-            border-color: #fff;
-        }
-
-        body:hover .cursor-dot,
-        body:hover .cursor-ring {
-            opacity: 1;
-        }
-
-        @media (max-width: 600px) {
-            .username { font-size: 1.8rem; }
-            .lang-stack .lua { font-size: 1.5rem; }
+        .cursor-dot.hover {
+            transform: translate(-50%, -50%) scale(2.5);
+            background: rgba(255,255,255,0.5);
         }
     </style>
 </head>
 <body>
     <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
     
     <canvas id="bg-canvas"></canvas>
     <div class="vignette"></div>
 
-    <!-- ENTER -->
     <div id="enter-screen">
         <div class="enter-content">
-            <div class="enter-title">STRETCHYDEV</div>
-            <div class="enter-line"></div>
-            <div style="color:#222; letter-spacing:4px; margin-top:20px; font-size:0.8rem;">.lua</div>
+            <div class="enter-title">[ click ]</div>
         </div>
     </div>
 
-    <!-- MAIN -->
     <div id="main-container" class="hidden">
         <div class="card">
-            <!-- avatar from assets -->
-            <div class="avatar-wrapper">
-                <img src="assets/avatar.png" alt="avatar" class="avatar" onerror="this.style.display='none'; this.nextSibling.style.display='flex';">
-                <div style="display:none; width:100px; height:100px; background:#111; align-items:center; justify-content:center; font-size:2rem;">⚡</div>
+            <img src="assets/avatar.png" alt="avatar" class="avatar" onerror="this.src='https://i.imgur.com/3q1BvB2.png';"> <div class="username">
+                stretchydev <i class="fas fa-circle"></i>
             </div>
 
-            <div class="username">
-                stretchydev <i class="fas fa-circle" style="font-size:0.6rem; color:#0f0;"></i>
-            </div>
-
-            <!-- typewriter bio -->
             <div class="bio" id="bio"></div>
 
-            <!-- languages: .lua first and dominant -->
             <div class="lang-stack">
                 <span class="lua">.lua</span>
                 <span>.cpp</span>
@@ -372,29 +304,21 @@
                 <span>.js</span>
                 <span>.ts</span>
                 <span>.py</span>
-                <span>.html</span>
-                <span>.css</span>
             </div>
 
-            <!-- socials -->
             <div class="social">
                 <a href="https://discordapp.com/users/stretchydev" target="_blank"><i class="fab fa-discord"></i></a>
                 <a href="https://github.com/StretchyDev-cell" target="_blank"><i class="fab fa-github"></i></a>
                 <a href="https://steamcommunity.com/id/Skibi1di/" target="_blank"><i class="fab fa-steam"></i></a>
             </div>
 
-            <!-- player with song.mp3 -->
             <div class="player">
-                <div class="track">
-                    <div>sleepwalker</div>
-                    <div class="track-artist">akiaura</div>
-                </div>
                 <div class="player-controls">
-                    <i class="fas fa-backward" id="prev"></i>
-                    <i class="fas fa-pause" id="play"></i>
-                    <i class="fas fa-forward" id="next"></i>
+                    <i class="fas fa-play" id="play"></i>
                 </div>
-                <input type="range" class="volume" id="volume" min="0" max="1" step="0.05" value="0.5">
+                <div class="track-info">
+                    <span class="track-artist">akiaura</span> — <span>sleepwalker</span>
+                </div>
             </div>
         </div>
     </div>
@@ -411,84 +335,60 @@
             const audio = document.getElementById('audio');
             const playBtn = document.getElementById('play');
             const bioEl = document.getElementById('bio');
-            const volumeSlider = document.getElementById('volume');
             let isPlaying = false;
 
-            // bio text — only .lua and others
-            const bioText = ".lua .cpp .rs .zig .js .ts .py .html .css ^ focus: building with .lua";
-
-            // typewriter
+            // Uproszczony tekst bio dla czystszego efektu
+            const bioText = "minimalism // focus: building with .lua";
+            
             let idx = 0;
             function typewriter() {
                 if (idx < bioText.length) {
-                    if (bioText[idx] === '^') {
-                        bioEl.innerHTML += '<br><span style="color:#fff; display:block; margin-top:6px;">→ </span>';
-                    } else {
-                        bioEl.innerHTML += bioText[idx];
-                    }
+                    bioEl.innerHTML += bioText[idx];
                     idx++;
-                    setTimeout(typewriter, 50);
+                    setTimeout(typewriter, 60);
                 } else {
-                    bioEl.innerHTML += '<span style="opacity:1; animation:blink 1s infinite;">_</span>';
+                    bioEl.innerHTML += '<span style="opacity:0.5; animation:pulseFade 1s infinite;">_</span>';
                 }
             }
 
-            // enter click
+            // Wejście
             enterScreen.addEventListener('click', () => {
                 enterScreen.style.opacity = '0';
                 setTimeout(() => {
                     enterScreen.style.display = 'none';
                     mainContainer.classList.remove('hidden');
-                    mainContainer.classList.add('visible');
+                    // Krótkie opóźnienie przed pojawieniem się głównego interfejsu
+                    setTimeout(() => {
+                        mainContainer.classList.add('visible');
+                    }, 100);
                     
-                    // try to play
-                    audio.volume = 0.5;
+                    audio.volume = 0.2; // Domyślnie cichsza muzyka jest przyjemniejsza
                     audio.play().then(() => {
                         isPlaying = true;
-                        playBtn.classList.remove('fa-play');
-                        playBtn.classList.add('fa-pause');
+                        playBtn.classList.replace('fa-play', 'fa-pause');
                     }).catch(() => {
                         isPlaying = false;
-                        playBtn.classList.remove('fa-pause');
-                        playBtn.classList.add('fa-play');
                     });
                     
                     bioEl.innerHTML = '';
                     idx = 0;
-                    typewriter();
-                }, 800);
+                    setTimeout(typewriter, 1000); // Odczekaj animację wejścia przed pisaniem
+                }, 1000);
             });
 
-            // play/pause
+            // Odtwarzacz
             playBtn.addEventListener('click', () => {
                 if (isPlaying) {
                     audio.pause();
-                    playBtn.classList.remove('fa-pause');
-                    playBtn.classList.add('fa-play');
+                    playBtn.classList.replace('fa-pause', 'fa-play');
                 } else {
-                    audio.play().catch(e => {});
-                    playBtn.classList.remove('fa-play');
-                    playBtn.classList.add('fa-pause');
+                    audio.play().catch(()=>{});
+                    playBtn.classList.replace('fa-play', 'fa-pause');
                 }
                 isPlaying = !isPlaying;
             });
 
-            // volume
-            volumeSlider.addEventListener('input', (e) => {
-                audio.volume = e.target.value;
-            });
-
-            // prev/next (visual only)
-            document.getElementById('prev').addEventListener('click', () => {
-                document.querySelector('.track div:first-child').innerText = 'lua loop';
-                document.querySelector('.track-artist').innerText = 'stretchy';
-            });
-            document.getElementById('next').addEventListener('click', () => {
-                document.querySelector('.track div:first-child').innerText = 'sleepwalker';
-                document.querySelector('.track-artist').innerText = 'akiaura';
-            });
-
-            // canvas particles
+            // Canvas - wolniejsze i delikatniejsze cząsteczki
             const canvas = document.getElementById('bg-canvas');
             const ctx = canvas.getContext('2d');
             let w, h, particles = [];
@@ -506,19 +406,12 @@
                 constructor() {
                     this.x = Math.random() * w;
                     this.y = Math.random() * h;
-                    this.vx = (Math.random() - 0.5) * 0.7;
-                    this.vy = (Math.random() - 0.5) * 0.7;
-                    this.size = Math.random() * 2 + 1;
-                    this.color = `rgba(255,255,255,${Math.random()*0.2})`;
+                    this.vx = (Math.random() - 0.5) * 0.3; // Wolniejszy ruch
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                    this.size = Math.random() * 1.5; // Mniejsze kropki
+                    this.color = `rgba(255,255,255,${Math.random() * 0.15})`; // Bardziej przezroczyste
                 }
-                update(mx, my) {
-                    let dx = mx - this.x;
-                    let dy = my - this.y;
-                    let dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 120) {
-                        this.x -= dx * 0.01;
-                        this.y -= dy * 0.01;
-                    }
+                update() {
                     this.x += this.vx;
                     this.y += this.vy;
                     if (this.x < 0) this.x = w;
@@ -534,21 +427,16 @@
                 }
             }
 
-            let mouseX = 0, mouseY = 0;
-            window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-
             function initParticles() {
                 particles = [];
-                for (let i = 0; i < 120; i++) particles.push(new Particle());
+                // Mniej cząsteczek na rzecz minimalizmu
+                for (let i = 0; i < 70; i++) particles.push(new Particle());
             }
 
             function animateParticles() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
-                    p.update(mouseX, mouseY);
+                    p.update();
                     p.draw();
                 });
                 requestAnimationFrame(animateParticles);
@@ -556,57 +444,39 @@
             initParticles();
             animateParticles();
 
-            // 3d tilt
+            // Subtelny efekt 3D (znacznie zmniejszony dla elegancji)
             const card = document.querySelector('.card');
             document.addEventListener('mousemove', (e) => {
                 if (mainContainer.classList.contains('visible')) {
                     const cx = w / 2;
                     const cy = h / 2;
-                    const rotX = (cy - e.clientY) / 40;
-                    const rotY = (e.clientX - cx) / 40;
+                    const rotX = (cy - e.clientY) / 80; // Słabszy efekt
+                    const rotY = (e.clientX - cx) / 80;
                     card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
                 }
             });
 
-            // cursor
+            // Ultra-prosty kursor
             const dot = document.querySelector('.cursor-dot');
-            const ring = document.querySelector('.cursor-ring');
-
             window.addEventListener('mousemove', (e) => {
                 dot.style.left = e.clientX + 'px';
                 dot.style.top = e.clientY + 'px';
-                ring.animate({ left: e.clientX + 'px', top: e.clientY + 'px' }, { duration: 300, fill: 'forwards' });
             });
 
-            window.addEventListener('mousedown', () => dot.classList.add('click'));
-            window.addEventListener('mouseup', () => dot.classList.remove('click'));
-
-            const hoverables = document.querySelectorAll('a, i, .enter-content, .lang-stack span, .volume');
+            const hoverables = document.querySelectorAll('a, i, .enter-content');
             hoverables.forEach(el => {
-                el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-                el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+                el.addEventListener('mouseenter', () => dot.classList.add('hover'));
+                el.addEventListener('mouseleave', () => dot.classList.remove('hover'));
             });
 
-            // title animation
-            let titleIndex = 0, charIndex = 0, deletingTitle = false;
-            const titles = ['.lua // stretchydev', 'minimal .lua', 'stretchydev'];
-            function animateTitle() {
-                let current = titles[titleIndex];
-                document.title = deletingTitle ? current.substring(0, charIndex-1) : current.substring(0, charIndex+1);
-                if (!deletingTitle && charIndex++ === current.length) {
-                    deletingTitle = true;
-                    setTimeout(animateTitle, 2000);
-                } else if (deletingTitle && charIndex-- === 0) {
-                    deletingTitle = false;
-                    titleIndex = (titleIndex + 1) % titles.length;
-                    setTimeout(animateTitle, 300);
-                } else {
-                    setTimeout(animateTitle, deletingTitle ? 70 : 140);
-                }
-            }
-            animateTitle();
+            // Płynna animacja tytułu strony
+            let titleState = false;
+            setInterval(() => {
+                document.title = titleState ? "stretchydev" : "stretchydev · minimal";
+                titleState = !titleState;
+            }, 3000);
 
-            // no context menu
+            // Blokada menu kontekstowego
             document.addEventListener('contextmenu', e => e.preventDefault());
         })();
     </script>
