@@ -1,35 +1,24 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ stretchydev ⚡ .lua .cpp .rs</title>
+    <title>stretchydev · .lua</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* RESET & VARIABLES */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg: #0a0a0a;
-            --text: #ffffff;
-            --accent: #ffffff;
-            --glass: rgba(0, 0, 0, 0.85);
-            --border: rgba(255, 255, 255, 0.08);
-            --glow: rgba(255, 255, 255, 0.2);
-            --font: 'Space Mono', monospace;
-        }
-
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font);
+            background: #000;
+            color: #fff;
+            font-family: 'Space Mono', monospace;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -39,7 +28,7 @@
             cursor: none;
         }
 
-        /* CANVAS BACKGROUND */
+        /* canvas background */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -47,33 +36,22 @@
             width: 100%;
             height: 100%;
             z-index: -1;
+            opacity: 0.4;
         }
 
-        /* EFFECTS */
-        .crt-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 100;
-        }
-
+        /* minimal overlay */
         .vignette {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+            background: radial-gradient(circle at center, transparent 50%, #000 100%);
             pointer-events: none;
-            z-index: 99;
+            z-index: 10;
         }
 
-        /* ENTER SCREEN */
+        /* enter screen */
         #enter-screen {
             position: fixed;
             top: 0;
@@ -81,7 +59,7 @@
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 200;
+            z-index: 100;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -93,41 +71,43 @@
             text-align: center;
         }
 
-        .glitch-title {
-            font-size: 3rem;
-            letter-spacing: 16px;
+        .enter-title {
+            font-size: 2.5rem;
             font-weight: 700;
+            letter-spacing: 8px;
             color: #fff;
-            text-shadow: 0 0 30px rgba(255,255,255,0.5);
-            animation: glitch 2s infinite;
+            opacity: 0.7;
+            animation: pulse 2.5s infinite;
         }
 
-        @keyframes glitch {
-            0%, 100% { transform: skew(0); }
-            95% { transform: skew(2deg); text-shadow: -2px 0 white, 2px 0 black; }
-            96% { transform: skew(-2deg); text-shadow: 2px 0 white, -2px 0 black; }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
         }
 
-        .glow-bar {
+        .enter-line {
             width: 0;
-            height: 2px;
+            height: 1px;
             background: #fff;
-            margin: 30px auto;
-            box-shadow: 0 0 40px white;
-            animation: expand 2.5s infinite alternate;
+            margin: 20px auto;
+            animation: lineExpand 2.5s infinite;
         }
 
-        @keyframes expand {
+        @keyframes lineExpand {
             0% { width: 0; opacity: 0; }
-            50% { width: 80%; opacity: 1; }
+            50% { width: 200px; opacity: 0.5; }
             100% { width: 0; opacity: 0; }
         }
 
-        /* MAIN CONTAINER */
+        /* main container */
         #main-container {
             opacity: 0;
             transition: opacity 1.5s ease;
-            z-index: 10;
+            z-index: 20;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         #main-container.visible {
@@ -138,228 +118,179 @@
             display: none !important;
         }
 
-        /* PROFILE CARD — CZYSTY, MROCZNY, POTĘŻNY */
-        .profile-card {
-            width: 820px;
-            max-width: 92vw;
-            background: rgba(8, 8, 8, 0.9);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+        /* card — pure minimal */
+        .card {
+            width: 700px;
+            max-width: 90vw;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 30px 100px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            border-radius: 4px;
+            padding: 40px 30px;
             transform-style: preserve-3d;
             transition: transform 0.1s ease;
         }
 
-        .banner {
-            height: 190px;
-            background: #0c0c0c url('assets/banner.png') center/cover no-repeat;
-            position: relative;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+        /* avatar */
+        .avatar-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        .banner::after {
-            content: ".lua .cpp .rs .zig .js .py";
-            position: absolute;
-            bottom: 20px;
-            right: 25px;
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: rgba(255,255,255,0.02);
-            letter-spacing: 8px;
-            white-space: nowrap;
-            pointer-events: none;
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 2px;
+            filter: grayscale(1);
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .avatar-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: -75px auto 15px;
-        }
-
-        .avatar-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 6px;
-            border: 3px solid rgba(255,255,255,0.2);
-            object-fit: cover;
-            filter: grayscale(100%) contrast(1.3);
-            transition: 0.4s ease;
-            background: #1a1a1a;
-        }
-
-        .avatar-container:hover .avatar-img {
-            filter: grayscale(0%) contrast(1.1);
+        .avatar:hover {
+            filter: grayscale(0);
             border-color: white;
-            box-shadow: 0 0 50px rgba(255,255,255,0.3);
         }
 
-        .status-indicator {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 22px;
-            height: 22px;
-            background: #00ffaa;
-            border-radius: 50%;
-            border: 3px solid black;
-            box-shadow: 0 0 25px #00ffaa;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } }
-
-        .profile-info {
-            text-align: center;
-            padding: 15px 35px 35px;
-        }
-
+        /* username */
         .username {
-            font-size: 3rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            letter-spacing: 6px;
-            margin-bottom: 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: lowercase;
         }
 
-        .badge {
-            font-size: 1.8rem;
-            color: white;
-            opacity: 0.7;
+        .username i {
+            font-size: 1.4rem;
+            color: #666;
+            margin-left: 8px;
         }
 
-        /* TYPEWRITER BIO */
-        .bio-text {
-            font-size: 1.2rem;
-            color: #ccc;
-            min-height: 4.5rem;
-            margin: 25px 0 25px;
-            letter-spacing: 2px;
-            line-height: 1.7;
-            border-left: 2px solid rgba(255,255,255,0.15);
-            padding-left: 20px;
+        /* bio typewriter */
+        .bio {
             text-align: left;
+            font-size: 1rem;
+            color: #aaa;
+            min-height: 4rem;
+            margin: 25px 0;
+            line-height: 1.6;
+            letter-spacing: 1px;
+            border-left: 1px solid #333;
+            padding-left: 16px;
         }
 
-        /* LANG GRID — LUA NAJWIĘKSZE */
-        .lang-grid {
+        /* language stack — .lua dominant */
+        .lang-stack {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 18px 30px;
-            margin: 30px 0 25px;
-            font-size: 1.4rem;
+            gap: 16px 28px;
+            margin: 25px 0 20px;
+            font-size: 1.1rem;
             font-weight: 700;
+            text-transform: lowercase;
         }
 
-        .lang-item {
-            color: #777;
+        .lang-stack span {
+            color: #444;
             transition: 0.2s;
-            letter-spacing: 1.5px;
-            border-bottom: 1px solid transparent;
+            letter-spacing: 1px;
         }
 
-        .lang-item:hover {
-            color: white;
-            border-bottom: 1px solid white;
-            transform: scale(1.15);
-            text-shadow: 0 0 25px white;
+        .lang-stack span:hover {
+            color: #fff;
         }
 
-        .lang-item.lua {
-            color: white;
-            font-size: 2.2rem;
-            text-shadow: 0 0 30px cyan, 0 0 15px blue;
-            border-bottom: 2px solid cyan;
+        .lang-stack .lua {
+            color: #fff;
+            font-size: 1.8rem;
+            text-shadow: 0 0 20px cyan;
         }
 
-        .social-links {
+        /* social links */
+        .social {
             display: flex;
             justify-content: center;
-            gap: 45px;
-            margin: 30px 0 25px;
+            gap: 40px;
+            margin: 25px 0 20px;
         }
 
-        .social-btn {
-            color: #666;
-            font-size: 2.5rem;
-            transition: 0.3s;
+        .social a {
+            color: #555;
+            font-size: 2rem;
+            transition: 0.2s;
             text-decoration: none;
         }
 
-        .social-btn:hover {
-            color: white;
-            transform: translateY(-8px) scale(1.2);
-            filter: drop-shadow(0 0 20px white);
+        .social a:hover {
+            color: #fff;
+            transform: translateY(-3px);
         }
 
-        /* MEDIA PLAYER */
-        .media-player {
-            background: rgba(0,0,0,0.6);
-            padding: 25px 20px;
-            border-top: 1px solid rgba(255,255,255,0.04);
+        /* music player */
+        .player {
+            margin-top: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 18px;
+            gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            padding-top: 25px;
         }
 
-        .song-info {
-            font-size: 1rem;
-            letter-spacing: 3px;
+        .track {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #888;
             text-transform: uppercase;
         }
 
-        .song-artist {
-            color: #555;
-            font-size: 0.8rem;
-            margin-top: 5px;
+        .track-artist {
+            color: #444;
+            font-size: 0.75rem;
+            margin-top: 4px;
         }
 
-        .controls {
+        .player-controls {
             display: flex;
-            gap: 45px;
-            font-size: 1.4rem;
-            color: #888;
+            gap: 35px;
+            font-size: 1.2rem;
+            color: #666;
         }
 
-        .controls i {
+        .player-controls i {
             cursor: pointer;
             transition: 0.2s;
         }
 
-        .controls i:hover {
-            color: white;
-            text-shadow: 0 0 25px white;
+        .player-controls i:hover {
+            color: #fff;
         }
 
-        .volume-slider {
-            width: 60%;
-            height: 2px;
+        .volume {
+            width: 200px;
+            height: 1px;
             background: #222;
             -webkit-appearance: none;
         }
 
-        .volume-slider::-webkit-slider-thumb {
+        .volume::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 0;
+            width: 8px;
+            height: 8px;
+            background: #fff;
             cursor: pointer;
-            box-shadow: 0 0 15px white;
         }
 
-        /* CURSOR */
-        .cursor-dot, .cursor-outline {
+        /* custom cursor */
+        .cursor-dot,
+        .cursor-ring {
             position: fixed;
+            top: 0;
+            left: 0;
             pointer-events: none;
             z-index: 9999;
             border-radius: 50%;
@@ -368,139 +299,141 @@
         }
 
         .cursor-dot {
-            width: 6px;
-            height: 6px;
-            background: white;
-            box-shadow: 0 0 20px white;
+            width: 4px;
+            height: 4px;
+            background: #fff;
         }
 
-        .cursor-outline {
-            width: 34px;
-            height: 34px;
-            border: 2px solid rgba(255,255,255,0.3);
+        .cursor-ring {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .cursor-dot.click { transform: scale(2.5); background: cyan; }
-        .cursor-outline.hover { transform: scale(1.7); border-color: white; box-shadow: 0 0 30px white; }
+        .cursor-dot.click {
+            transform: scale(2);
+            background: #fff;
+        }
 
-        body:hover .cursor-dot, body:hover .cursor-outline { opacity: 1; }
+        .cursor-ring.hover {
+            transform: scale(1.5);
+            border-color: #fff;
+        }
 
-        @media (max-width: 700px) {
-            .username { font-size: 2.2rem; }
-            .glitch-title { font-size: 2rem; letter-spacing: 8px; }
-            .lang-item.lua { font-size: 1.8rem; }
+        body:hover .cursor-dot,
+        body:hover .cursor-ring {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .username { font-size: 1.8rem; }
+            .lang-stack .lua { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+    <div class="cursor-ring"></div>
+    
     <canvas id="bg-canvas"></canvas>
-    <div class="crt-overlay"></div>
     <div class="vignette"></div>
 
-    <!-- ENTER SCREEN -->
+    <!-- ENTER -->
     <div id="enter-screen">
         <div class="enter-content">
-            <p class="glitch-title" data-text="STRETCHY.DEV">STRETCHY.DEV</p>
-            <div class="glow-bar"></div>
-            <div style="color: #444; letter-spacing: 6px; margin-top: 20px; font-size: 1rem;">⚡ .lua ⚡ .cpp ⚡ .rs ⚡</div>
+            <div class="enter-title">STRETCHYDEV</div>
+            <div class="enter-line"></div>
+            <div style="color:#222; letter-spacing:4px; margin-top:20px; font-size:0.8rem;">.lua</div>
         </div>
     </div>
 
-    <!-- MAIN CARD -->
+    <!-- MAIN -->
     <div id="main-container" class="hidden">
-        <div class="profile-card">
-            <div class="banner"></div> <!-- tło z assets/banner.png jeśli istnieje, inaczej czerń -->
-            
-            <div class="avatar-container">
-                <!-- awatar z assets/avatar.png -->
-                <img src="assets/avatar.png" alt="avatar" class="avatar-img" onerror="this.style.display='none'; this.nextSibling.style.display='flex';" />
-                <div style="display: none; width:100%; height:100%; background:#111; align-items:center; justify-content:center; font-size:3rem;">⚡</div>
-                <div class="status-indicator"></div>
+        <div class="card">
+            <!-- avatar from assets -->
+            <div class="avatar-wrapper">
+                <img src="assets/avatar.png" alt="avatar" class="avatar" onerror="this.style.display='none'; this.nextSibling.style.display='flex';">
+                <div style="display:none; width:100px; height:100px; background:#111; align-items:center; justify-content:center; font-size:2rem;">⚡</div>
             </div>
 
-            <div class="profile-info">
-                <h1 class="username">stretchydev <span class="badge"><i class="fas fa-crown"></i></span></h1>
-                
-                <!-- typewriter bio -->
-                <div class="bio-text" id="typewriter-bio"></div>
+            <div class="username">
+                stretchydev <i class="fas fa-circle" style="font-size:0.6rem; color:#0f0;"></i>
+            </div>
 
-                <!-- LUA I INNE — LUA NAJWIĘKSZE -->
-                <div class="lang-grid">
-                    <span class="lang-item lua">.lua</span>
-                    <span class="lang-item">.cpp</span>
-                    <span class="lang-item">.rs</span>
-                    <span class="lang-item">.zig</span>
-                    <span class="lang-item">.js</span>
-                    <span class="lang-item">.ts</span>
-                    <span class="lang-item">.py</span>
-                    <span class="lang-item">.html</span>
-                    <span class="lang-item">.css</span>
-                    <span class="lang-item">.rb</span>
-                    <span class="lang-item">.go</span>
-                </div>
+            <!-- typewriter bio -->
+            <div class="bio" id="bio"></div>
 
-                <div class="social-links">
-                    <a href="https://discordapp.com/users/stretchydev" class="social-btn" target="_blank"><i class="fab fa-discord"></i></a>
-                    <a href="https://github.com/StretchyDev-cell" class="social-btn" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://steamcommunity.com/id/Skibi1di/" class="social-btn" target="_blank"><i class="fab fa-steam"></i></a>
-                    <a href="#" class="social-btn"><i class="fas fa-terminal"></i></a>
-                </div>
+            <!-- languages: .lua first and dominant -->
+            <div class="lang-stack">
+                <span class="lua">.lua</span>
+                <span>.cpp</span>
+                <span>.rs</span>
+                <span>.zig</span>
+                <span>.js</span>
+                <span>.ts</span>
+                <span>.py</span>
+                <span>.html</span>
+                <span>.css</span>
+            </div>
 
-                <!-- MEDIA PLAYER z plikiem song.mp3 -->
-                <div class="media-player">
-                    <div class="song-info">
-                        <span class="song-title">Sleepwalker</span>
-                        <span class="song-artist">Akiaura</span>
-                    </div>
-                    <div class="controls">
-                        <i class="fas fa-backward" id="prev-btn"></i>
-                        <i class="fas fa-pause" id="play-btn"></i>
-                        <i class="fas fa-forward" id="next-btn"></i>
-                    </div>
-                    <input type="range" class="volume-slider" min="0" max="1" step="0.05" value="0.5">
+            <!-- socials -->
+            <div class="social">
+                <a href="https://discordapp.com/users/stretchydev" target="_blank"><i class="fab fa-discord"></i></a>
+                <a href="https://github.com/StretchyDev-cell" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://steamcommunity.com/id/Skibi1di/" target="_blank"><i class="fab fa-steam"></i></a>
+            </div>
+
+            <!-- player with song.mp3 -->
+            <div class="player">
+                <div class="track">
+                    <div>sleepwalker</div>
+                    <div class="track-artist">akiaura</div>
                 </div>
+                <div class="player-controls">
+                    <i class="fas fa-backward" id="prev"></i>
+                    <i class="fas fa-pause" id="play"></i>
+                    <i class="fas fa-forward" id="next"></i>
+                </div>
+                <input type="range" class="volume" id="volume" min="0" max="1" step="0.05" value="0.5">
             </div>
         </div>
     </div>
 
-    <!-- AUDIO — ścieżka assets/song.mp3 -->
-    <audio id="bg-audio" loop>
+    <audio id="audio" loop>
         <source src="assets/song.mp3" type="audio/mpeg">
     </audio>
 
     <script>
         (function() {
-            // Elementy DOM
+            // DOM
             const enterScreen = document.getElementById('enter-screen');
             const mainContainer = document.getElementById('main-container');
-            const audio = document.getElementById('bg-audio');
-            const playBtn = document.getElementById('play-btn');
-            const bioElement = document.getElementById('typewriter-bio');
-            const slider = document.querySelector('.volume-slider');
+            const audio = document.getElementById('audio');
+            const playBtn = document.getElementById('play');
+            const bioEl = document.getElementById('bio');
+            const volumeSlider = document.getElementById('volume');
             let isPlaying = false;
 
-            // TEKST który pojawi się w bio — .lua i reszta
-            const bioText = ".lua .cpp .rs .zig .js .ts .py .html .css ^ system: online // developing w .lua, bo tylko .lua daje moc";
+            // bio text — only .lua and others
+            const bioText = ".lua .cpp .rs .zig .js .ts .py .html .css ^ focus: building with .lua";
 
-            // Typewriter
-            let i = 0;
-            function typeWriter() {
-                if (i < bioText.length) {
-                    if (bioText.charAt(i) === '^') {
-                        bioElement.innerHTML += '<br><span style="color:white; display:block; margin:8px 0 0; font-size:1.3rem;">➤ </span>';
+            // typewriter
+            let idx = 0;
+            function typewriter() {
+                if (idx < bioText.length) {
+                    if (bioText[idx] === '^') {
+                        bioEl.innerHTML += '<br><span style="color:#fff; display:block; margin-top:6px;">→ </span>';
                     } else {
-                        bioElement.innerHTML += bioText.charAt(i);
+                        bioEl.innerHTML += bioText[idx];
                     }
-                    i++;
-                    setTimeout(typeWriter, 55);
+                    idx++;
+                    setTimeout(typewriter, 50);
                 } else {
-                    bioElement.innerHTML += '<span style="opacity:1; animation:blink 1s infinite;">_</span>';
+                    bioEl.innerHTML += '<span style="opacity:1; animation:blink 1s infinite;">_</span>';
                 }
             }
 
-            // ENTER
+            // enter click
             enterScreen.addEventListener('click', () => {
                 enterScreen.style.opacity = '0';
                 setTimeout(() => {
@@ -508,82 +441,90 @@
                     mainContainer.classList.remove('hidden');
                     mainContainer.classList.add('visible');
                     
-                    // Próba odtworzenia audio
+                    // try to play
                     audio.volume = 0.5;
                     audio.play().then(() => {
                         isPlaying = true;
                         playBtn.classList.remove('fa-play');
                         playBtn.classList.add('fa-pause');
-                    }).catch(err => {
-                        console.warn("Brak pliku song.mp3 lub autoplay zablokowany – kliknij play");
+                    }).catch(() => {
                         isPlaying = false;
                         playBtn.classList.remove('fa-pause');
                         playBtn.classList.add('fa-play');
                     });
-
-                    // Uruchom typewriter
-                    bioElement.innerHTML = '';
-                    i = 0;
-                    typeWriter();
-                }, 1000);
+                    
+                    bioEl.innerHTML = '';
+                    idx = 0;
+                    typewriter();
+                }, 800);
             });
 
-            // Play/Pause
+            // play/pause
             playBtn.addEventListener('click', () => {
                 if (isPlaying) {
                     audio.pause();
                     playBtn.classList.remove('fa-pause');
                     playBtn.classList.add('fa-play');
                 } else {
-                    audio.play().catch(e => console.log("Audio nie może być odtworzone – sprawdź ścieżkę assets/song.mp3"));
+                    audio.play().catch(e => {});
                     playBtn.classList.remove('fa-play');
                     playBtn.classList.add('fa-pause');
                 }
                 isPlaying = !isPlaying;
             });
 
-            // Volume
-            slider.addEventListener('input', (e) => {
+            // volume
+            volumeSlider.addEventListener('input', (e) => {
                 audio.volume = e.target.value;
             });
 
-            // CANVAS Z CZĄSTECZKAMI
+            // prev/next (visual only)
+            document.getElementById('prev').addEventListener('click', () => {
+                document.querySelector('.track div:first-child').innerText = 'lua loop';
+                document.querySelector('.track-artist').innerText = 'stretchy';
+            });
+            document.getElementById('next').addEventListener('click', () => {
+                document.querySelector('.track div:first-child').innerText = 'sleepwalker';
+                document.querySelector('.track-artist').innerText = 'akiaura';
+            });
+
+            // canvas particles
             const canvas = document.getElementById('bg-canvas');
             const ctx = canvas.getContext('2d');
-            let width, height, particles = [];
+            let w, h, particles = [];
 
             function resize() {
-                width = window.innerWidth;
-                height = window.innerHeight;
-                canvas.width = width;
-                canvas.height = height;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w;
+                canvas.height = h;
             }
             window.addEventListener('resize', () => { resize(); initParticles(); });
             resize();
 
             class Particle {
                 constructor() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 1.2;
-                    this.vy = (Math.random() - 0.5) * 1.2;
-                    this.size = Math.random() * 3 + 1;
-                    this.color = `rgba(255,255,255,${Math.random()*0.3+0.2})`;
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.vx = (Math.random() - 0.5) * 0.7;
+                    this.vy = (Math.random() - 0.5) * 0.7;
+                    this.size = Math.random() * 2 + 1;
+                    this.color = `rgba(255,255,255,${Math.random()*0.2})`;
                 }
                 update(mx, my) {
                     let dx = mx - this.x;
                     let dy = my - this.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 140) {
-                        this.x -= dx * 0.02;
-                        this.y -= dy * 0.02;
+                    if (dist < 120) {
+                        this.x -= dx * 0.01;
+                        this.y -= dy * 0.01;
                     }
                     this.x += this.vx;
                     this.y += this.vy;
-                    if (this.x < 0) this.x = width;
-                    if (this.x > width) this.x = 0;
-                    if (this.y < 0) this.y = height;
-                    if (this.y > height) this.y = 0;
+                    if (this.x < 0) this.x = w;
+                    if (this.x > w) this.x = 0;
+                    if (this.y < 0) this.y = h;
+                    if (this.y > h) this.y = 0;
                 }
                 draw() {
                     ctx.fillStyle = this.color;
@@ -601,81 +542,71 @@
 
             function initParticles() {
                 particles = [];
-                for (let i = 0; i < 190; i++) particles.push(new Particle());
+                for (let i = 0; i < 120; i++) particles.push(new Particle());
             }
 
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
+            function animateParticles() {
+                ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
                     p.update(mouseX, mouseY);
                     p.draw();
                 });
-                requestAnimationFrame(animate);
+                requestAnimationFrame(animateParticles);
             }
             initParticles();
-            animate();
+            animateParticles();
 
-            // 3D tilt
-            const card = document.querySelector('.profile-card');
+            // 3d tilt
+            const card = document.querySelector('.card');
             document.addEventListener('mousemove', (e) => {
                 if (mainContainer.classList.contains('visible')) {
-                    const cx = window.innerWidth / 2;
-                    const cy = window.innerHeight / 2;
-                    const rotX = (cy - e.clientY) / 35;
-                    const rotY = (e.clientX - cx) / 35;
-                    card.style.transform = `perspective(1300px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                    const cx = w / 2;
+                    const cy = h / 2;
+                    const rotX = (cy - e.clientY) / 40;
+                    const rotY = (e.clientX - cx) / 40;
+                    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
                 }
             });
 
-            // Kursor
-            const dot = document.querySelector(".cursor-dot");
-            const outline = document.querySelector(".cursor-outline");
+            // cursor
+            const dot = document.querySelector('.cursor-dot');
+            const ring = document.querySelector('.cursor-ring');
 
-            window.addEventListener("mousemove", (e) => {
-                dot.style.left = `${e.clientX}px`;
-                dot.style.top = `${e.clientY}px`;
-                outline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 300, fill: "forwards" });
+            window.addEventListener('mousemove', (e) => {
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+                ring.animate({ left: e.clientX + 'px', top: e.clientY + 'px' }, { duration: 300, fill: 'forwards' });
             });
 
-            window.addEventListener("mousedown", () => dot.classList.add("click"));
-            window.addEventListener("mouseup", () => dot.classList.remove("click"));
+            window.addEventListener('mousedown', () => dot.classList.add('click'));
+            window.addEventListener('mouseup', () => dot.classList.remove('click'));
 
-            const hoverList = document.querySelectorAll("a, i, .social-btn, #enter-screen, .controls i, .volume-slider, .lang-item");
-            hoverList.forEach(el => {
-                el.addEventListener("mouseenter", () => outline.classList.add("hover"));
-                el.addEventListener("mouseleave", () => outline.classList.remove("hover"));
+            const hoverables = document.querySelectorAll('a, i, .enter-content, .lang-stack span, .volume');
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+                el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
             });
 
-            // Tytuł animowany
-            let titles = [".lua // stretchydev", "⚡ system .lua ⚡", "potęga lua", "stretchydev"];
-            let tidx = 0, cidx = 0, deleting = false;
+            // title animation
+            let titleIndex = 0, charIndex = 0, deletingTitle = false;
+            const titles = ['.lua // stretchydev', 'minimal .lua', 'stretchydev'];
             function animateTitle() {
-                let current = titles[tidx];
-                document.title = deleting ? current.substring(0, cidx-1) : current.substring(0, cidx+1);
-                if (!deleting && cidx++ === current.length) {
-                    deleting = true;
+                let current = titles[titleIndex];
+                document.title = deletingTitle ? current.substring(0, charIndex-1) : current.substring(0, charIndex+1);
+                if (!deletingTitle && charIndex++ === current.length) {
+                    deletingTitle = true;
                     setTimeout(animateTitle, 2000);
-                } else if (deleting && cidx-- === 0) {
-                    deleting = false;
-                    tidx = (tidx + 1) % titles.length;
+                } else if (deletingTitle && charIndex-- === 0) {
+                    deletingTitle = false;
+                    titleIndex = (titleIndex + 1) % titles.length;
                     setTimeout(animateTitle, 300);
                 } else {
-                    setTimeout(animateTitle, deleting ? 80 : 150);
+                    setTimeout(animateTitle, deletingTitle ? 70 : 140);
                 }
             }
             animateTitle();
 
-            // Prev/next (symulacja)
-            document.getElementById('prev-btn').addEventListener('click', () => {
-                document.querySelector('.song-title').innerText = 'LUA MODE';
-                document.querySelector('.song-artist').innerText = 'stretchy';
-            });
-            document.getElementById('next-btn').addEventListener('click', () => {
-                document.querySelector('.song-title').innerText = 'Sleepwalker';
-                document.querySelector('.song-artist').innerText = 'Akiaura';
-            });
-
-            // Zapobiegaj menu kontekstowemu
+            // no context menu
             document.addEventListener('contextmenu', e => e.preventDefault());
         })();
     </script>
